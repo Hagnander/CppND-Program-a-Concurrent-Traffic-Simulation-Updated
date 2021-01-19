@@ -18,9 +18,14 @@ class Vehicle;
 template <class T>
 class MessageQueue
 {
-public:
+    public:
+        T receive();
+        void send(T &&msg);
 
-private:
+    private:
+        std::deque<T> _queue;
+        std::condition_variable _condition;
+        std::mutex _mutex; 
     
 };
 
@@ -57,6 +62,8 @@ private:
     std::condition_variable _condition;
     std::mutex _mutex;
     TrafficLightPhase  _currentPhase;
+    std::chrono::time_point<std::chrono::steady_clock> _TimeSinceLastToggle;
+    double _TimeToNextToggle;
 };
 
 #endif
