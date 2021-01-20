@@ -56,7 +56,7 @@ void TrafficLight::waitForGreen()
     // Once it receives TrafficLightPhase::green, the method returns.
     while (true)
     {
-        if (_queue->receive() == green)
+        if (_queue.receive() == green)
             return;
     }
 }
@@ -79,24 +79,26 @@ void TrafficLight::cycleThroughPhases()
     // and toggles the current phase of the traffic light between red and green and sends an update method 
     // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
-    _TimeSinceLastToggle = std::chrono::steady_clock::now();
-    _TimeToNextToggle = rand() % 3 + 4; 
+    std::chrono::time_point<std::chrono::steady_clock> TimeSinceLastToggle;
+    double TimeToNextToggle;
+    TimeSinceLastToggle = std::chrono::steady_clock::now();
+    TimeToNextToggle = rand() % 3 + 4; 
     //std::cout<<"In cycleThroug..."<<_TimeToNextToggle<<std::endl;
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         auto t1 = std::chrono::steady_clock::now();
-        std::chrono::duration<double> elapsed_seconds = t1 -_TimeSinceLastToggle;
-        if (elapsed_seconds.count() >=  _TimeToNextToggle)
+        std::chrono::duration<double> elapsed_seconds = t1 - TimeSinceLastToggle;
+        if (elapsed_seconds.count() >=  TimeToNextToggle)
         {
             //std::cout<<_TimeToNextToggle<<std::endl;
             if (_currentPhase == red)
                 _currentPhase = green;
             else
                 _currentPhase = red;
-            _TimeSinceLastToggle = t1;
-            _TimeToNextToggle = rand() % 3 + 4;            
-           // _queue->send(std::move(_currentPhase));
+            TimeSinceLastToggle = t1;
+            TimeToNextToggle = rand() % 3 + 4;            
+           _queue.send(std::move(_currentPhase));
         }
     }
 }
