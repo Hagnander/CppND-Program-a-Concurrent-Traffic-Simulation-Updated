@@ -64,6 +64,7 @@ private:
     TrafficLightPhase  _currentPhase;
     std::chrono::time_point<std::chrono::steady_clock> _TimeSinceLastToggle;
     double _TimeToNextToggle;
+    std::shared_ptr<MessageQueue<TrafficLightPhase>> _queue;
 };
 
 #endif
